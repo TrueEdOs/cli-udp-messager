@@ -1,6 +1,8 @@
 package cli.udp.messenger.server.models;
 
 public class ChatMessage {
+    private String chatName;
+    private String chatType;
     private String nickname;
     private String data;
     private long timestamp;

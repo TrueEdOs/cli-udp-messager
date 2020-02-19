@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class Connector extends Thread{
+public class Connector extends Thread {
     private DatagramSocket receiveSocket;
     private DatagramSocket sendSocket;
     private Queue<String> incomingMessages = new ConcurrentLinkedDeque<>();
@@ -23,11 +23,11 @@ public class Connector extends Thread{
         sendSocket.send(dp);
     }
 
-    public boolean isAnyMessages() {
+    public boolean hasMessages() {
         return !incomingMessages.isEmpty();
     }
 
-    public String getLastMessages() {
+    public String getLastMessage() {
         return incomingMessages.poll();
     }
 
@@ -46,7 +46,7 @@ public class Connector extends Thread{
             }
 
             byte[] data = incoming.getData();
-            String s = new String(data, 0, incoming.getLength());
+            incomingMessages.add(new String(data, 0, incoming.getLength()));
         }
     }
 }

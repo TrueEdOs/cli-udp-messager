@@ -1,8 +1,12 @@
 package cli.udp.messenger.server.dto;
 
+import cli.udp.messenger.server.helpers.RawJsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 public class DefaultClientRequest {
     private String login;
     private String type;
+    @JsonDeserialize(using = RawJsonDeserializer.class)
     private String data;
 
     public String getLogin() {
