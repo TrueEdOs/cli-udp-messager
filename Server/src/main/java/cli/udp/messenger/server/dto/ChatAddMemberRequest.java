@@ -2,7 +2,7 @@ package cli.udp.messenger.server.dto;
 
 public class ChatAddMemberRequest {
     private String chatName;
-    private String nickName;
+    private String nickname;
 
     public String getChatName() {
         return chatName;
@@ -13,12 +13,12 @@ public class ChatAddMemberRequest {
         return this;
     }
 
-    public String getNickName() {
-        return nickName;
+    public String getNickname() {
+        return nickname;
     }
 
-    public ChatAddMemberRequest setNickName(String nickName) {
-        this.nickName = nickName;
+    public ChatAddMemberRequest setNickname(String nickName) {
+        this.nickname = nickName;
         return this;
     }
 }

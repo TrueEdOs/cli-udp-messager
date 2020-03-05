@@ -4,7 +4,6 @@ import cli.udp.messenger.server.models.ChatMessage;
 
 public class SendMessageRequest {
     private String receiver;
-    private String type;
     private ChatMessage message;
 
     public String getReceiver() {
@@ -13,15 +12,6 @@ public class SendMessageRequest {
 
     public SendMessageRequest setReceiver(String receiver) {
         this.receiver = receiver;
-        return this;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public SendMessageRequest setType(String type) {
-        this.type = type;
         return this;
     }
 

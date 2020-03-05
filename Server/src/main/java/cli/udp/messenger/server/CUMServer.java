@@ -2,7 +2,7 @@ package cli.udp.messenger.server;
 
 import cli.udp.messenger.server.dto.*;
 import cli.udp.messenger.server.models.Chat;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import cli.udp.messenger.server.models.ChatMessage;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,7 +22,8 @@ public class CUMServer {
     private static Map<String, Chat> chatMap = new HashMap<>();
     private static Map<String, String> hostMap = new HashMap<>();
     private static Map<String, Integer> portMap = new HashMap<>();
-    private static ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);;
+    private static ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    ;
 
     public static void processMessage(final String messages) throws Exception {
         DefaultClientRequest defaultClientRequest = objectMapper.readValue(messages, DefaultClientRequest.class);
@@ -52,7 +53,7 @@ public class CUMServer {
 
         if (type.equals("addMember")) {
             ChatAddMemberRequest request = objectMapper.readValue(data, ChatAddMemberRequest.class);
-            if (request.getChatName() == null || request.getNickName() == null) {
+            if (request.getChatName() == null || request.getNickname() == null) {
                 throw new Exception("Cannot add member");
             }
 
@@ -62,7 +63,9 @@ public class CUMServer {
                 throw new Exception("Cannot add member. There are no such chat");
             }
 
-            chat.addMember(request.getNickName());
+            chat.addMember(request.getNickname());
+            connector.sendMessage(InetAddress.getByName(hostMap.get(request.getNickname())), portMap.get(request.getNickname()),
+                    objectMapper.writeValueAsString(new ChatMessage().setChatName(request.getChatName()).setData(request.getNickname() + "WERE ADDED TO CHAT").setNickname(login).setTimestamp(System.currentTimeMillis())));
             return;
         }
 
@@ -77,26 +80,26 @@ public class CUMServer {
                 throw new Exception("Cannot create chat. Already exist");
             }
 
-            chatMap.put(request.getName(), new Chat(request.getName()));
+            chatMap.put(request.getName(), new Chat(request.getName()).addMember(login));
+            connector.sendMessage(InetAddress.getByName(hostMap.get(login)), portMap.get(login),
+                    objectMapper.writeValueAsString(new ChatMessage().setChatName(request.getName()).setData("CREATE CHAT").setNickname(login).setTimestamp(System.currentTimeMillis())));
             return;
         }
 
         if (type.equals("sendMessage")) {
             SendMessageRequest request = objectMapper.readValue(data, SendMessageRequest.class);
 
-            if (request.getMessage() == null || request.getReceiver() == null || request.getType() == null) {
+            if (request.getMessage() == null || request.getReceiver() == null) {
                 throw new Exception("Cannot send message");
             }
 
-            if (request.getType().equals("user")) {
-                if (!hostMap.containsKey("user")) {
-                    throw new Exception("Cannot send message. There are no such user");
-                }
-
-                String user = request.getReceiver();
-                connector.sendMessage(InetAddress.getByName(hostMap.get(user)), portMap.get(user), objectMapper.writeValueAsString(request.getMessage()));
+            String receiver = request.getReceiver();
+            if (hostMap.containsKey(receiver)) {
+                String from_user = request.getMessage().getNickname();
+                connector.sendMessage(InetAddress.getByName(hostMap.get(receiver)), portMap.get(receiver), objectMapper.writeValueAsString(request.getMessage()));
+                connector.sendMessage(InetAddress.getByName(hostMap.get(from_user)), portMap.get(from_user), objectMapper.writeValueAsString(request.getMessage()));
             } else {
-                Chat chat = chatMap.get(request.getReceiver());
+                Chat chat = chatMap.get(receiver);
                 if (chat == null) {
                     throw new Exception("Cannot send message. There are no such chat");
                 }
@@ -105,6 +108,8 @@ public class CUMServer {
                     connector.sendMessage(InetAddress.getByName(hostMap.get(member)), portMap.get(member), objectMapper.writeValueAsString(request.getMessage()));
                 }
             }
+
+            return;
         }
 
 
@@ -112,7 +117,6 @@ public class CUMServer {
     }
 
     public static void main(String[] args) throws SocketException {
-        //objectMapper
         connector = new Connector(55555);
         connector.start();
 

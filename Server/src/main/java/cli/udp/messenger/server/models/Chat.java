@@ -7,14 +7,15 @@ import static sun.swing.MenuItemLayoutHelper.max;
 
 public class Chat {
     private String name;
-    private List<String> members;
+    private List<String> members = new ArrayList<>();
 
     public Chat(final String name) {
         this.name = name;
     }
 
-    public void addMember(final String nickname) {
+    public Chat addMember(final String nickname) {
         members.add(nickname);
+        return this;
     }
 
     public List<String> getMembers() {
