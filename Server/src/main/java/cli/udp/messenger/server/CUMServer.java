@@ -95,6 +95,15 @@ public class CUMServer {
 
                 String user = request.getReceiver();
                 connector.sendMessage(InetAddress.getByName(hostMap.get(user)), portMap.get(user), objectMapper.writeValueAsString(request.getMessage()));
+            } else {
+                Chat chat = chatMap.get(request.getReceiver());
+                if (chat == null) {
+                    throw new Exception("Cannot send message. There are no such chat");
+                }
+
+                for (String member : chat.getMembers()) {
+                    connector.sendMessage(InetAddress.getByName(hostMap.get(member)), portMap.get(member), objectMapper.writeValueAsString(request.getMessage()));
+                }
             }
         }
 

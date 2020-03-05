@@ -16,4 +16,8 @@ public class Chat {
     public void addMember(final String nickname) {
         members.add(nickname);
     }
+
+    public List<String> getMembers() {
+        return members;
+    }
 }

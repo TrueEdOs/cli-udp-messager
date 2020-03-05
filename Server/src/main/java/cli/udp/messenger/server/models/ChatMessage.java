@@ -2,10 +2,18 @@ package cli.udp.messenger.server.models;
 
 public class ChatMessage {
     private String chatName;
-    private String chatType;
     private String nickname;
     private String data;
     private long timestamp;
+
+    public String getChatName() {
+        return chatName;
+    }
+
+    public ChatMessage setChatName(String chatName) {
+        this.chatName = chatName;
+        return this;
+    }
 
     public String getNickname() {
         return nickname;
