@@ -166,7 +166,6 @@ class ComradeUI:
             self.messages.insert('1.0', msg + '\n')
 
 
-
 def main():
     window = Tk()
     window.title("UDP Messenger")
